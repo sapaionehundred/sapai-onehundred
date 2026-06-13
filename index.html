@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Kids - เกมคณิตศาสตร์แสนสนุก!</title>
+    <style>
+        /* CSS: ออกแบบ UI/UX ให้น่ารัก สีสันสดใส */
+        @import url('https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #FF9AA2;
+            --secondary: #FFB7B2;
+            --accent: #FFDAC1;
+            --success: #B5EAD7;
+            --text-dark: #4A4A4A;
+            --bg-color: #F8F9FA;
+        }
+
+        body {
+            font-family: 'Mali', cursive;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #FF6B6B;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-board {
+            background-color: #E2F0CB;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #558B2F;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 3px dashed #AED581;
+        }
+
+        /* เมนูเลือกระดับชั้น */
+        .grade-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background-color: var(--secondary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-family: 'Mali', cursive;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-3px);
+            background-color: #FF8A80;
+        }
+
+        .tab-btn.active {
+            background-color: #FF5252;
+            box-shadow: 0 4px 10px rgba(255, 82, 82, 0.4);
+        }
+
+        /* พื้นที่เล่นเกม */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .problem-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #3F51B5;
+            background: #E8EAF6;
+            padding: 20px 40px;
+            border-radius: 20px;
+            width: 80%;
+            letter-spacing: 2px;
+        }
+
+        input[type="number"] {
+            font-family: 'Mali', cursive;
+            font-size: 2rem;
+            padding: 10px;
+            width: 150px;
+            text-align: center;
+            border: 4px solid var(--accent);
+            border-radius: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #FF6B6B;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            font-family: 'Mali', cursive;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 6px 0 #2E7D32;
+        }
+
+        .submit-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        .feedback {
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 40px;
+            margin-top: 15px;
+        }
+
+        .correct { color: #4CAF50; animation: bounce 0.5s; }
+        .wrong { color: #F44336; animation: shake 0.5s; }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🌟 เกมคณิตศาสตร์แสนสนุก 🌟</h1>
+        <div class="score-board">คะแนนสะสม: <span id="scoreDisplay">0</span> 🏆</div>
+
+        <div class="grade-tabs" id="tabs">
+            </div>
+
+        <div class="game-area">
+            <h2 id="gradeTitle" style="color: #FF9800; margin: 0;">เลือกระดับชั้นเพื่อเริ่มเกมเลย!</h2>
+            <div class="problem-display" id="problemDisplay">?</div>
+            <input type="number" id="answerInput" placeholder="ตอบที่นี่" disabled>
+            <button class="submit-btn" id="submitBtn" disabled>ส่งคำตอบ!</button>
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Logic: ระบบสุ่มโจทย์และจัดการเกม
+        let currentGrade = 1;
+        let score = 0;
+        let correctAnswer = 0;
+
+        // การดึงข้อมูลคะแนนจาก Local Storage
+        const savedScore = localStorage.getItem('mathGameScore');
+        if (savedScore) {
+            score = parseInt(savedScore);
+            document.getElementById('scoreDisplay').innerText = score;
+        }
+
+        const gradesInfo = [
+            { id: 1, name: "ป.1", desc: "การบวกเลขง่ายๆ (ไม่เกิน 20)" },
+            { id: 2, name: "ป.2", desc: "การลบเลข (ไม่เกิน 100)" },
+            { id: 3, name: "ป.3", desc: "การคูณพื้นฐาน (แม่ 2-9)" },
+            { id: 4, name: "ป.4", desc: "การหารลงตัว" },
+            { id: 5, name: "ป.5", desc: "บวกลบคูณหารระคน" },
+            { id: 6, name: "ป.6", desc: "สมการเบื้องต้นและการคิดซ้อน" }
+        ];
+
+        // สร้างเมนูระดับชั้น
+        const tabsContainer = document.getElementById('tabs');
+        gradesInfo.forEach(grade => {
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn';
+            btn.innerText = grade.name;
+            btn.onclick = () => selectGrade(grade.id, btn);
+            tabsContainer.appendChild(btn);
+        });
+
+        const problemDisplay = document.getElementById('problemDisplay');
+        const answerInput = document.getElementById('answerInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const feedback = document.getElementById('feedback');
+        const gradeTitle = document.getElementById('gradeTitle');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+
+        function selectGrade(level, btnElement) {
+            currentGrade = level;
+            
+            // จัดการ Active class ให้ปุ่ม
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+
+            const gradeData = gradesInfo.find(g => g.id === level);
+            gradeTitle.innerText = `${gradeData.name}: ${gradeData.desc}`;
+            
+            answerInput.disabled = false;
+            submitBtn.disabled = false;
+            feedback.innerText = "";
+            feedback.className = "feedback";
+            
+            generateProblem();
+            answerInput.focus();
+        }
+
+        // ฟังก์ชันสุ่มตัวเลขจำนวนเต็ม
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // ระบบสุ่มโจทย์ตามระดับชั้น
+        function generateProblem() {
+            let num1, num2, num3, problemText;
+
+            switch (currentGrade) {
+                case 1: // ป.1: บวกเลขไม่เกิน 20
+                    num1 = randomInt(1, 10);
+                    num2 = randomInt(1, 10);
+                    correctAnswer = num1 + num2;
+                    problemText = `${num1} + ${num2} = ?`;
+                    break;
+                case 2: // ป.2: ลบเลขไม่เกิน 100 (ไม่ติดลบ)
+                    num1 = randomInt(20, 99);
+                    num2 = randomInt(1, num1 - 1);
+                    correctAnswer = num1 - num2;
+                    problemText = `${num1} - ${num2} = ?`;
+                    break;
+                case 3: // ป.3: คูณเลขแม่ 2 ถึง 9
+                    num1 = randomInt(2, 9);
+                    num2 = randomInt(2, 9);
+                    correctAnswer = num1 * num2;
+                    problemText = `${num1} × ${num2} = ?`;
+                    break;
+                case 4: // ป.4: หารลงตัว
+                    num2 = randomInt(2, 9); // ตัวหาร
+                    correctAnswer = randomInt(2, 12); // ผลลัพธ์
+                    num1 = num2 * correctAnswer; // ตัวตั้ง
+                    problemText = `${num1} ÷ ${num2} = ?`;
+                    break;
+                case 5: // ป.5: ระคน (คูณก่อนบวก)
+                    num1 = randomInt(2, 5);
+                    num2 = randomInt(2, 5);
+                    num3 = randomInt(10, 50);
+                    correctAnswer = (num1 * num2) + num3;
+                    problemText = `(${num1} × ${num2}) + ${num3} = ?`;
+                    break;
+                case 6: // ป.6: คณิตศาสตร์ประยุกต์ / หาค่า x
+                    num1 = randomInt(2, 9);
+                    correctAnswer = randomInt(5, 20); // ให้ตอบค่า x
+                    num2 = num1 * correctAnswer;
+                    problemText = `${num1} × 📦 = ${num2}`;
+                    break;
+            }
+
+            problemDisplay.innerText = problemText;
+            answerInput.value = '';
+        }
+
+        // ระบบตรวจคำตอบ
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            
+            if (isNaN(userAnswer)) {
+                feedback.innerText = "⚠️ อย่าลืมพิมพ์ตัวเลขนะเด็กๆ!";
+                feedback.className = "feedback wrong";
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                // ตอบถูก
+                score += 10;
+                updateScore();
+                feedback.innerText = "🎉 เก่งมาก! ตอบถูกจ้า (+10 คะแนน)";
+                feedback.className = "feedback correct";
+                
+                // สุ่มข้อใหม่หลังจากตอบถูก 1.5 วินาที
+                setTimeout(() => {
+                    generateProblem();
+                    feedback.innerText = "";
+                }, 1500);
+            } else {
+                // ตอบผิด
+                feedback.innerText = `❌ ยังไม่ใช่น้าา คำตอบที่ถูกคือ ${correctAnswer}`;
+                feedback.className = "feedback wrong";
+                
+                setTimeout(() => {
+                    generateProblem();
+                    feedback.innerText = "";
+                }, 2500); // ให้เวลาดูเฉลยนานขึ้นนิดนึง
+            }
+            answerInput.focus();
+        }
+
+        // อัปเดตและบันทึกคะแนนลง Local Storage
+        function updateScore() {
+            scoreDisplay.innerText = score;
+            localStorage.setItem('mathGameScore', score);
+        }
+
+        // ผูก Event Listener
+        submitBtn.addEventListener('click', checkAnswer);
+        
+        // ให้กด Enter เพื่อตอบได้
+        answerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // เลือกระดับชั้นเริ่มต้น ป.1 แบบ Default ให้เลยเมื่อโหลดเสร็จ
+        window.onload = () => {
+            const firstTab = document.querySelector('.tab-btn');
+            selectGrade(1, firstTab);
+        };
+
+    </script>
+</body>
+</html>
